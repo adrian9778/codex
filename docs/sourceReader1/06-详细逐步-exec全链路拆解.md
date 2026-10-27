@@ -251,7 +251,7 @@ async fn run_sampling_request(sess, step_context, turn_store, turn_diff_tracker,
 
 这是真正的「发请求 → 流式接收 → 工具执行」主体。它内部：
 - 发 `ResponsesStreamRequest::Sampling`（构建 prompt 后）。
-- 流式接收 `ResponseItem`，逐项 `handle_output_item_done`（`turn.rs:317`）落库/发射。
+- 流式接收 `ResponseItem`，逐项 `handle_output_item_done`（`core/src/stream_events_utils.rs:317`）落库/发射。
 - 遇到工具调用 → `handle_tool_call`（工具并行执行，见 02 专题）。
 - 流结束 → 返回 `SamplingRequestResult { needs_follow_up, last_agent_message }`。
 

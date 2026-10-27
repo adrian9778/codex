@@ -129,7 +129,7 @@ let mut args = create_seatbelt_command_args_with_profile(CreateSeatbeltCommandAr
 
 ## 5. Linux：bubblewrap vs legacy landlock（landlock.rs + linux_run_main.rs）
 
-### 5.1 后端决定（manager.rs:801 `ensure_linux_bubblewrap_is_supported`）
+### 5.1 后端决定（manager.rs:802 `ensure_linux_bubblewrap_is_supported`）
 
 ```rust
 let requires_bubblewrap = allow_network_for_proxy
@@ -238,7 +238,7 @@ sequenceDiagram
 | `should_sandbox` | `sandboxing/src/manager.rs:should_sandbox` | 334 |
 | `transform` | `sandboxing/src/manager.rs:transform` | 355 |
 | `compatibility_sandbox_policy_for_permission_profile` | `sandboxing/src/manager.rs:compatibility_sandbox_policy_for_permission_profile` | 756 |
-| `ensure_linux_bubblewrap_is_supported` | `sandboxing/src/manager.rs:ensure_linux_bubblewrap_is_supported` | 801 |
+| `ensure_linux_bubblewrap_is_supported` | `sandboxing/src/manager.rs:ensure_linux_bubblewrap_is_supported` | 802 |
 | `create_linux_sandbox_command_args_for_permission_profile` | `sandboxing/src/landlock.rs:create_linux_sandbox_command_args_for_permission_profile` | 26 |
 | `run_main`（Linux） | `linux-sandbox/src/linux_run_main.rs:run_main` | 135 |
 
