@@ -33,13 +33,17 @@ codex-rs/sandboxing/src/manager.rs 函数：transform 偏移：+0
 ## 三、文档树
 
 ```
-docs/sourceReader/
+docs/sourceReader1/
 ├── README.md              # 总索引 + Mermaid 学习路径
 ├── 00-docs-style-guide.md # 本文件
 ├── 01-系统骨架.md          # 形态A第一层：进程/模块/职责/主数据流
 ├── 02-agent主循环.md       # 形态B专题：codex_thread / run_turn 主循环
 ├── 03-tui交互层.md         # 形态B专题：codex-rs/tui 交互渲染
-└── 04-sandboxing沙箱.md    # 形态B专题：linux-sandbox/bwrap/seatbelt/windows
+├── 04-sandboxing沙箱.md    # 形态B专题：linux-sandbox/bwrap/seatbelt/windows
+├── 05-简单例子-全路径走读.md # 形态A第二层：codex exec 最短完整路径
+├── 06-详细逐步-exec全链路拆解.md # 形态A第三层：逐跳字段真相 + 采样循环
+├── 07-源码补齐-核心模块与数据流.md # 形态A第四层：类型关系/协议/配置/生命周期
+└── 08-已知缺口汇总.md       # 01~04 已知缺口集中，按 P1/P2/P3 分级
 ```
 
 每篇文档头部固定写一行「一句话定位」，正文按形态各自骨架展开。

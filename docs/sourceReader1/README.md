@@ -8,13 +8,14 @@
 | 文档 | 层级 | 一句话定位 |
 |---|---|---|
 | [00-docs-style-guide](00-docs-style-guide.md) | 规范 | 源码锚定文档的统一规范：事实红线、锚点记法、状态分级 |
-| [01-系统骨架](01-系统骨架.md) | 形态A·第一层 | 进程/模块/职责/主数据流：18 个可执行、命令面、core 引擎、app-server 通信 |
+| [01-系统骨架](01-系统骨架.md) | 形态A·第一层 | 进程/模块/职责/主数据流：生产 18 + 开发 3 = 21 个可执行、命令面、core 引擎、app-server 通信 |
 | [02-agent主循环](02-agent主循环.md) | 形态B·专题 | `run_turn` 从输入到回复：sampling 循环、工具并行执行、needs_follow_up 不变量 |
 | [03-tui交互层](03-tui交互层.md) | 形态B·专题 | TUI 事件循环：6 分支 select!、committed/active cell 渲染、安全块改写机制 |
 | [04-sandboxing沙箱](04-sandboxing沙箱.md) | 形态B·专题 | 跨平台沙箱：Seatbelt/bubblewrap+seccomp/RestrictedToken/MXC、策略变换 |
 | [05-简单例子-全路径走读](05-简单例子-全路径走读.md) | 形态A·第二层 | `codex exec` 最短完整成功路径：入口→thread/start→turn/start→事件循环→输出 |
 | [06-详细逐步-exec全链路拆解](06-详细逐步-exec全链路拆解.md) | 形态A·第三层 | 逐跳字段真相、引擎采样循环、needs_follow_up 判定、ServerRequest 全拒绝 |
 | [07-源码补齐-核心模块与数据流](07-源码补齐-核心模块与数据流.md) | 形态A·第四层 | 核心类型关系（Session/TurnContext/StepContext）、协议契约、配置流、生命周期 |
+| [08-已知缺口汇总](08-已知缺口汇总.md) | 汇总 | 01~04 四篇「已知缺口」集中：P2×4、P3×7，按严重度统一跟进 |
 
 ## Mermaid 学习路径
 
@@ -27,6 +28,7 @@ flowchart LR
     A --> E["05 简单例子<br/>codex exec 全路径"]
     E --> F["06 详细逐步<br/>逐跳字段/采样循环"]
     F --> G["07 源码补齐<br/>类型关系/生命周期"]
+    G --> H["08 已知缺口汇总<br/>P2/P3 统一跟进"]
 ```
 
 **建议阅读顺序**：先读 01 建立全局（哪个进程做什么、请求怎么走），再按兴趣进 02（引擎核心）/ 03（前端）/ 04（安全）；或沿 05→06→07 走形态A四层纵深。

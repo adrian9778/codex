@@ -284,5 +284,5 @@ sequenceDiagram
 | 级别 | 结论 | 依据 |
 |---|---|---|
 | P2 | 工具执行失败时 `RespondToModel` 直接把文本回传模型，**不经过审批/沙箱**（`core/src/stream_events_utils.rs:413`）——若该错误文本由工具自身构造，理论上可被模型利用，实际风险低但值得复核 | `core/src/stream_events_utils.rs:413` |
-| P3 | `defer_tool_dispatch`（post hook 为 Sync 时）会推迟所有工具派发到 post hook 后，`handle_tool_call` 在 future 里被 `or_cancel`——并发窗口里工具可能在取消后仍启动（cancellation_token 检查在派发前） | turn.rs:355~367 |
-| P3 | `run_turn` 有多处 `return Ok(None)`（压缩/拦截后放弃），调用方需区分「正常完成」与「被放弃」——语义靠 `Option` 表达，容易误判 | turn.rs:736~795 |
+| P3 | `defer_tool_dispatch`（post hook 为 Sync 时）会推迟所有工具派发到 post hook 后，`handle_tool_call` 在 future 里被 `or_cancel`——并发窗口里工具可能在取消后仍启动（cancellation_token 检查在派发前） | `core/src/stream_events_utils.rs:355`、`turn.rs:2714` |
+| P3 | `run_turn` 有多处 `return Ok(None)`（压缩/拦截后放弃），调用方需区分「正常完成」与「被放弃」——语义靠 `Option` 表达，容易误判 | `turn.rs:240~794`（7 处：240/338/342/396/708/731/794） |
