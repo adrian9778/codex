@@ -244,10 +244,10 @@ sequenceDiagram
 
 ---
 
-## 10. 已知缺口 / 待拍板
+## 10. 设计特性与值得关注的点
 
-| 级别 | 结论 | 依据 |
+| 要点 | 结论 | 依据 |
 |---|---|---|
-| P2 | 模块文档（sandboxing/src/landlock.rs:25）引用 `docs/linux_sandbox.md`，但**该文件在仓库中不存在**（`docs/` 下无此文件）——文档与代码脱节 | `sandboxing/src/landlock.rs:25`，`ls docs/` 无 linux_sandbox.md |
-| P3 | `Forbid` 偏好无条件返回不沙箱（manager.rs:341）——若调用方在需要托管网络的场景误传 `Forbid`，会绕过沙箱且无警告 | manager.rs:341 |
-| P3 | `apply-seccomp-then-exec` 是内部隐藏参数（linux-sandbox/src/linux_run_main.rs:93），但 `ensure_inner_stage_mode_is_valid` 的校验逻辑依赖它——两阶段顺序是隐式约定 | `linux-sandbox/src/linux_run_main.rs:93/157` |
+| 文档脱节 | 模块文档（`sandboxing/src/landlock.rs:25`）引用 `docs/linux_sandbox.md`，但**该文件在仓库中不存在**（`docs/` 下无此文件）——文档与代码脱节 | `codex-rs/sandboxing/src/landlock.rs:25`，`ls docs/` 无 `linux_sandbox.md` |
+| Forbid 无警告 | `Forbid` 偏好无条件返回不沙箱（`manager.rs:341`）——若调用方在需要托管网络的场景误传 `Forbid`，会绕过沙箱且无警告 | `codex-rs/sandboxing/src/manager.rs:341` |
+| 隐式两阶段约定 | `apply-seccomp-then-exec` 是内部隐藏参数（`linux-sandbox/src/linux_run_main.rs:93`），但 `ensure_inner_stage_mode_is_valid` 的校验逻辑依赖它——两阶段顺序是隐式约定 | `codex-rs/linux-sandbox/src/linux_run_main.rs:93/157` |

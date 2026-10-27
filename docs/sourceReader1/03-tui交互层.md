@@ -218,10 +218,10 @@ sequenceDiagram
 
 ---
 
-## 9. 已知缺口 / 待拍板
+## 9. 设计特性与值得关注的点
 
-| 级别 | 结论 | 依据 |
+| 要点 | 结论 | 依据 |
 |---|---|---|
-| P2 | `safety_recourse` 对 <0.151.0 的远程服务器**静默禁用**——用户可能完全看不到「更安全改写」选项却无提示（`supports_server` 返回 false 直接 `return`） | safety_recourse.rs:9~16 |
-| P2 | `continue_with_rewrite` 的守卫是**静默放弃**（不满足条件直接 return，无 UI 反馈）——若因 `is_user_turn_pending_or_running` 等瞬态条件失败，用户点了没反应 | safety_recourse.rs:26~34 |
-| P3 | TUI 主循环 6 个 select! 分支里，`tui_event` 与 `backend_event` 优先级靠 guard 表达式调节，启动保护边界（`startup_protected_input_boundary`）的判定条件分散在 app.rs 与 startup.rs 两处，改动易漏 | startup.rs:1471~1505 |
+| 静默禁用 | `safety_recourse` 对 <0.151.0 的远程服务器**静默禁用**——用户可能完全看不到「更安全改写」选项却无提示（`supports_server` 返回 false 直接 `return`） | `codex-rs/tui/src/app/safety_recourse.rs:9~16` |
+| 静默放弃 | `continue_with_rewrite` 的守卫是**静默放弃**（不满足条件直接 return，无 UI 反馈）——若因 `is_user_turn_pending_or_running` 等瞬态条件失败，用户点了没反应 | `codex-rs/tui/src/app/safety_recourse.rs:26~34` |
+| 启动保护分散 | TUI 主循环 6 个 select! 分支里，`tui_event` 与 `backend_event` 优先级靠 guard 表达式调节，启动保护边界（`startup_protected_input_boundary`）的判定条件分散在 app.rs 与 startup.rs 两处，改动易漏 | `codex-rs/tui/src/startup.rs:1471~1505` |
