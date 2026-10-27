@@ -174,6 +174,19 @@ TurnStartParams {
 
 `should_process_notification`（`lib.rs:1674`）是**过滤器**：按变体决定是否放行。全局放行：`ConfigWarning` / `DeprecationNotice`；按 thread_id（+turn_id）匹配：`Error`、`ItemCompleted`、`TurnCompleted`、`TurnStarted` 等。**不匹配的丢弃**，避免把别的线程/turn 事件混进本 turn。
 
+**量化边界**（实测 `common.rs:1973` 的宏定义）：`ServerNotification` 枚举共 **76 个变体**，`should_process_notification` 只**显式匹配 17 个**，其余 **59 个**走 `_ => false` 被直接丢弃。被丢弃的代表变体：
+
+| 类别 | 被丢弃的变体（示例） | 为什么丢弃是合理的 |
+|---|---|---|
+| 账户/网络 | `AccountUpdated`、`AccountRateLimitsUpdated`、`GatewayOAuthChanged` | 与单次 turn 无关，exec 非交互无账户 UI |
+| 文件系统 | `FsChanged`、`ProjectChanged` | 后台文件变更，exec 单次执行不关心 |
+| MCP | `McpToolCallProgress`、`McpServerStatusUpdated`、`McpServerOauthLoginCompleted` | 工具进度，exec 只等最终 turn 结果 |
+| 进程 | `ProcessExited`、`ProcessOutputDelta`、`CommandExecOutputDelta` | 命令输出流，exec 非交互无需实时回显 |
+| 线程元数据 | `ThreadArchived`、`ThreadDeleted`、`ThreadQueueChanged`、`ThreadClosed`、`SkillsChanged` | 跨线程管理事件，与本 turn 无关 |
+| 流式增量 | `AgentMessageDelta`、`PlanDelta`、`RawResponseCompleted`、`ReasoningSummaryTextDelta` | exec 不渲染增量，只在 `TurnCompleted` 拿最终 items |
+
+> **关键洞察**：exec 是「要最终答案」的一次性前端，**不消费增量流**（`*Delta` 全部丢弃），也不消费与本 turn 无关的元数据事件。真正关心的只有 17 个与当前 `thread_id + turn_id` 直接相关的进度/错误/完成事件。若未来想让 `codex exec` 显示实时流，需在这 17 个之外显式放行 `*Delta` 变体——这是扩展点，不是缺陷。
+
 放行后先 `maybe_backfill_turn_completed_items`（`lib.rs:1738`）：若 `TurnCompleted` 的 `items` 为空（in-process 背压下可能丢非终态 item 通知），则补发一次 `thread/read` 拉回完整 items，供 human/json 输出恢复 final message。这是 `turn/completed` 保证「一定有 items」的补丁。
 
 然后 `event_processor.process_server_notification(notification)`，看返回的 `CodexStatus`：`Running` 继续，`InitiateShutdown` 则 `request_shutdown`（`lib.rs:2030`，发 `thread/unsubscribe`）并 break。
@@ -343,6 +356,7 @@ sequenceDiagram
 | 锚点 | 文件 | 行号 |
 |---|---|---|
 | `lib.rs 函数：should_process_notification` | `codex-rs/exec/src/lib.rs` | 1674 |
+| `common.rs 宏调用：server_notification_definitions` | `codex-rs/app-server-protocol/src/protocol/common.rs` | 1973 |
 | `lib.rs 函数：maybe_backfill_turn_completed_items` | `codex-rs/exec/src/lib.rs` | 1738 |
 | `lib.rs 函数：should_backfill_turn_completed_items` | `codex-rs/exec/src/lib.rs` | 1783 |
 | `lib.rs 函数：handle_server_request` | `codex-rs/exec/src/lib.rs` | 2089 |

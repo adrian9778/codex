@@ -191,9 +191,9 @@ match event {
 
 **并发工具执行**：`in_flight`（`Vec<InFlightFuture>`）累积每个 `FunctionCall` 的 `tool_future`，全部 `join!` 后统一回写——这就是「一个采样请求里多个工具并行」的实现。
 
-### 5.3 工具分派：`handle_output_item_done`（stream_events_utils.rs）
+### 5.3 工具分派：`handle_output_item_done`（`core/src/stream_events_utils.rs`）
 
-`FunctionCall` 分支（stream_events_utils.rs:355~370）核心：
+`FunctionCall` 分支（`core/src/stream_events_utils.rs:355~370`）核心：
 
 ```rust
 let tool_future: InFlightFuture<'static> = if ctx.defer_tool_dispatch {
@@ -210,10 +210,10 @@ output.needs_follow_up = true;
 output.tool_future = Some(tool_future);
 ```
 
-- **`needs_follow_up = true`**（stream_events_utils.rs:369）：只要有工具调用，就必须下一轮采样把结果回传模型。
-- **`handle_tool_call`**（tools/parallel.rs:107）：工具真正执行入口，`parallel_execution: RwLock`（parallel.rs:92）保证并发互斥。
+- **`needs_follow_up = true`**（`core/src/stream_events_utils.rs:369`）：只要有工具调用，就必须下一轮采样把结果回传模型。
+- **`handle_tool_call`**（`tools/parallel.rs:107`）：工具真正执行入口，`parallel_execution: RwLock`（`parallel.rs:92`）保证并发互斥。
 
-**非工具消息**分支（stream_events_utils.rs:373~411）：assistant 消息 → `finalize_non_tool_response_item` → `emit_turn_item_started/completed`（发 `Event` 给 UI）。这就是「模型只说回复时 turn 结束」的路径。
+**非工具消息**分支（`core/src/stream_events_utils.rs:373~411`）：assistant 消息 → `finalize_non_tool_response_item` → `emit_turn_item_started/completed`（发 `Event` 给 UI）。这就是「模型只说回复时 turn 结束」的路径。
 
 ---
 
@@ -224,8 +224,8 @@ output.tool_future = Some(tool_future);
 | `FunctionCall`（要执行工具） | `handle_tool_call` 并行执行，结果写入 `FunctionCallOutput` 回传 | **true** → 继续循环 |
 | 纯 assistant `Message` | `finalize_non_tool_response_item` → `emit_turn_item_completed` | false → 循环跳出 |
 
-工具执行失败的两条路（stream_events_utils.rs:413~456）：
-- `RespondToModel(message)`：直接以文本 `FunctionCallOutput` 回传模型（turn.rs 外，stream_events_utils.rs:418）。
+工具执行失败的两条路（`core/src/stream_events_utils.rs:413~456`）：
+- `RespondToModel(message)`：直接以文本 `FunctionCallOutput` 回传模型（turn.rs 外，`core/src/stream_events_utils.rs:418`）。
 - `Fatal(message)`：以 `success: false` 的 output 回传。
 
 ---
@@ -283,6 +283,6 @@ sequenceDiagram
 
 | 级别 | 结论 | 依据 |
 |---|---|---|
-| P2 | 工具执行失败时 `RespondToModel` 直接把文本回传模型，**不经过审批/沙箱**（stream_events_utils.rs:413）——若该错误文本由工具自身构造，理论上可被模型利用，实际风险低但值得复核 | stream_events_utils.rs:413 |
+| P2 | 工具执行失败时 `RespondToModel` 直接把文本回传模型，**不经过审批/沙箱**（`core/src/stream_events_utils.rs:413`）——若该错误文本由工具自身构造，理论上可被模型利用，实际风险低但值得复核 | `core/src/stream_events_utils.rs:413` |
 | P3 | `defer_tool_dispatch`（post hook 为 Sync 时）会推迟所有工具派发到 post hook 后，`handle_tool_call` 在 future 里被 `or_cancel`——并发窗口里工具可能在取消后仍启动（cancellation_token 检查在派发前） | turn.rs:355~367 |
 | P3 | `run_turn` 有多处 `return Ok(None)`（压缩/拦截后放弃），调用方需区分「正常完成」与「被放弃」——语义靠 `Option` 表达，容易误判 | turn.rs:736~795 |
